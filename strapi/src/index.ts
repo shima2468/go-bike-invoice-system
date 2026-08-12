@@ -94,21 +94,20 @@ async function ensurePermissions(strapi: Core.Strapi) {
 async function ensureApiToken(strapi: Core.Strapi) {
   const envPath = path.resolve(strapi.dirs.app.root, '..', '.env.local');
 
+  const existingTokens = await strapi.db.query('admin::api-token').findMany({
+    where: { name: TOKEN_NAME },
+  });
+
+  // Local: skip recreation if token already in .env.local
   if (fs.existsSync(envPath)) {
     const content = fs.readFileSync(envPath, 'utf8');
     const match = content.match(/^STRAPI_API_TOKEN=(.+)$/m);
-    if (match?.[1]?.trim()) {
+    if (match?.[1]?.trim() && existingTokens.length > 0) {
       return;
     }
   }
 
-  const existing = await strapi.db
-    .query('admin::api-token')
-    .findMany({
-      where: { name: TOKEN_NAME, type: 'full-access' },
-    });
-
-  for (const token of existing) {
+  for (const token of existingTokens) {
     await strapi.admin.services['api-token-content-api'].revoke(token.id);
   }
 
@@ -120,8 +119,15 @@ async function ensureApiToken(strapi: Core.Strapi) {
     lifespan: null,
   });
 
-  updateEnvLocal(envPath, accessKey);
-  strapi.log.info('STRAPI_API_TOKEN written to ../.env.local');
+  try {
+    updateEnvLocal(envPath, accessKey);
+    strapi.log.info('STRAPI_API_TOKEN written to ../.env.local');
+  } catch {
+    strapi.log.warn('Could not write .env.local (expected on cloud hosting).');
+  }
+
+  // Printed once so cloud deploy can copy into Vercel env
+  strapi.log.info(`STRAPI_API_TOKEN=${accessKey}`);
 }
 
 export default {
