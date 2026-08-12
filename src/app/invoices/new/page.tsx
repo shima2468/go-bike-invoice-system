@@ -4,7 +4,7 @@ import { InvoiceForm } from "@/components/invoice/invoice-form";
 
 export default function NewInvoicePage() {
   return (
-    <div className="flex min-h-full flex-col">
+    <div className="flex min-h-dvh flex-col">
       <AppHeader />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 pb-32 pt-6 sm:px-6 sm:pb-12 sm:pt-8 lg:px-8">
         <div className="mb-6 sm:mb-8">
