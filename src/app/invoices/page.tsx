@@ -4,6 +4,9 @@ import { AppHeader } from "@/components/layout/app-header";
 import { formatCurrency, formatDate } from "@/lib/invoice-formatting";
 import { listInvoices } from "@/lib/db/invoices";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function InvoicesPage() {
   let invoices: Awaited<ReturnType<typeof listInvoices>> = [];
   let error: string | null = null;

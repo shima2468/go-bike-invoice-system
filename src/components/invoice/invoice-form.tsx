@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import {
@@ -55,6 +56,7 @@ function StatusBanner({
 }
 
 export function InvoiceForm() {
+  const router = useRouter();
   const [previewMode, setPreviewMode] = useState(false);
   const [savedInvoice, setSavedInvoice] = useState<Invoice | null>(null);
   const [invoiceNumber, setInvoiceNumber] = useState(formatInvoiceNumber(1));
@@ -140,6 +142,9 @@ export function InvoiceForm() {
       setInvoiceNumber(result.invoice.invoiceNumber);
       setStatusMessage("Factuur succesvol opgeslagen.");
       setPreviewMode(true);
+      router.refresh();
+      // Ga naar het overzicht zodat de nieuwe factuur zichtbaar is
+      router.push("/invoices");
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Opslaan mislukt."

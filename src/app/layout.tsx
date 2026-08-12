@@ -21,10 +21,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="nl"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} min-h-dvh antialiased`}
     >
       <body className="flex min-h-dvh flex-col bg-background text-foreground selection:bg-brand-primary/25">
-        {children}
+        <div className="flex min-h-dvh flex-1 flex-col">{children}</div>
       </body>
     </html>
   );

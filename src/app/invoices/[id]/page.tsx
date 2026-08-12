@@ -4,6 +4,9 @@ import { AppHeader } from "@/components/layout/app-header";
 import { InvoicePreview } from "@/components/invoice/invoice-preview";
 import { getInvoiceById } from "@/lib/db/invoices";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function InvoiceDetailPage({
   params,
 }: {

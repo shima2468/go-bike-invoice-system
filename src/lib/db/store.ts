@@ -98,6 +98,12 @@ export async function readStore(): Promise<StoreData> {
 export async function writeStore(data: StoreData): Promise<void> {
   if (useBlob()) {
     await writeToBlob(data);
+    // Keep a local mirror when possible (local/dev)
+    try {
+      fs.writeFileSync(localStorePath(), JSON.stringify(data, null, 2), "utf8");
+    } catch {
+      // ignore local mirror failures on read-only filesystems
+    }
     return;
   }
 
