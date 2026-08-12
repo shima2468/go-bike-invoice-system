@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { put, list } from "@vercel/blob";
+import { get, put } from "@vercel/blob";
 import type { Customer, Invoice } from "@/types/invoice";
 
 export interface StoreData {
@@ -33,19 +33,40 @@ function useBlob(): boolean {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 }
 
-async function readFromBlob(): Promise<StoreData | null> {
-  const result = await list({ prefix: STORE_KEY, limit: 1 });
-  const blob = result.blobs.find((item) => item.pathname === STORE_KEY);
-  if (!blob) return null;
+async function streamToString(
+  stream: ReadableStream<Uint8Array>
+): Promise<string> {
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (value) chunks.push(value);
+  }
+  const total = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+  const merged = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return new TextDecoder().decode(merged);
+}
 
-  const response = await fetch(blob.url, { cache: "no-store" });
-  if (!response.ok) return null;
-  return (await response.json()) as StoreData;
+async function readFromBlob(): Promise<StoreData | null> {
+  const result = await get(STORE_KEY, {
+    access: "private",
+    useCache: false,
+  });
+  if (!result || result.statusCode === 304 || !result.stream) return null;
+
+  const text = await streamToString(result.stream);
+  return JSON.parse(text) as StoreData;
 }
 
 async function writeToBlob(data: StoreData): Promise<void> {
   await put(STORE_KEY, JSON.stringify(data, null, 2), {
-    access: "public",
+    access: "private",
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
