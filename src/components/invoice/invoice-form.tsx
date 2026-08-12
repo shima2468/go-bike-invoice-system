@@ -178,7 +178,6 @@ export function InvoiceForm({
       );
       setPreviewMode(true);
       router.refresh();
-      router.push("/invoices");
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Opslaan mislukt."
@@ -352,6 +351,14 @@ export function InvoiceForm({
           >
             <MessageCircle className="h-4 w-4" />
             {isSharingWhatsApp ? "Openen..." : "Via WhatsApp versturen"}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => router.push("/invoices")}
+            className="flex-1 sm:flex-none"
+          >
+            Naar overzicht
           </Button>
         </>
       )}
