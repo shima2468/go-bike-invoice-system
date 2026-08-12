@@ -55,11 +55,20 @@ function StatusBanner({
   );
 }
 
-export function InvoiceForm() {
+export function InvoiceForm({
+  existingInvoice = null,
+}: {
+  existingInvoice?: Invoice | null;
+}) {
   const router = useRouter();
+  const isEditMode = Boolean(existingInvoice);
   const [previewMode, setPreviewMode] = useState(false);
-  const [savedInvoice, setSavedInvoice] = useState<Invoice | null>(null);
-  const [invoiceNumber, setInvoiceNumber] = useState(formatInvoiceNumber(1));
+  const [savedInvoice, setSavedInvoice] = useState<Invoice | null>(
+    existingInvoice
+  );
+  const [invoiceNumber, setInvoiceNumber] = useState(
+    existingInvoice?.invoiceNumber ?? formatInvoiceNumber(1)
+  );
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -68,10 +77,23 @@ export function InvoiceForm() {
 
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceFormSchema),
-    defaultValues: {
-      ...defaultInvoiceFormValues,
-      invoiceDate: todayIsoDate(),
-    },
+    defaultValues: existingInvoice
+      ? {
+          customerName: existingInvoice.customerName,
+          identificationNumber: existingInvoice.identificationNumber,
+          email: existingInvoice.email,
+          phone: existingInvoice.phone,
+          scooterType: existingInvoice.scooterType,
+          warrantyDuration: existingInvoice.warrantyDuration,
+          scooterCondition: existingInvoice.scooterCondition,
+          priceExVat: existingInvoice.priceExVat,
+          vatRate: existingInvoice.vatRate,
+          invoiceDate: existingInvoice.invoiceDate,
+        }
+      : {
+          ...defaultInvoiceFormValues,
+          invoiceDate: todayIsoDate(),
+        },
     mode: "onChange",
   });
 
@@ -85,6 +107,8 @@ export function InvoiceForm() {
   );
 
   useEffect(() => {
+    if (isEditMode) return;
+
     async function fetchInvoiceNumber() {
       try {
         const response = await fetch("/api/invoices/next-number");
@@ -98,7 +122,7 @@ export function InvoiceForm() {
     }
 
     fetchInvoiceNumber();
-  }, []);
+  }, [isEditMode]);
 
   const handlePreview = async () => {
     const valid = await form.trigger();
@@ -123,14 +147,21 @@ export function InvoiceForm() {
 
     try {
       const values = form.getValues();
-      const response = await fetch("/api/invoices", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...values,
-          invoiceNumber,
-        }),
-      });
+      const editId =
+        existingInvoice?.documentId ??
+        (existingInvoice?.id != null ? String(existingInvoice.id) : null);
+
+      const response = await fetch(
+        isEditMode && editId ? `/api/invoices/${editId}` : "/api/invoices",
+        {
+          method: isEditMode ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...values,
+            invoiceNumber,
+          }),
+        }
+      );
 
       const result = await response.json();
 
@@ -140,10 +171,13 @@ export function InvoiceForm() {
 
       setSavedInvoice(result.invoice);
       setInvoiceNumber(result.invoice.invoiceNumber);
-      setStatusMessage("Factuur succesvol opgeslagen.");
+      setStatusMessage(
+        isEditMode
+          ? "Factuur succesvol bijgewerkt."
+          : "Factuur succesvol opgeslagen."
+      );
       setPreviewMode(true);
       router.refresh();
-      // Ga naar het overzicht zodat de nieuwe factuur zichtbaar is
       router.push("/invoices");
     } catch (error) {
       setErrorMessage(
@@ -274,7 +308,7 @@ export function InvoiceForm() {
         className="flex-1 sm:flex-none"
       >
         <Save className="h-4 w-4" />
-        {isSaving ? "Opslaan..." : "Opslaan"}
+        {isSaving ? "Opslaan..." : isEditMode ? "Wijzigingen opslaan" : "Opslaan"}
       </Button>
     </>
   ) : (
@@ -290,7 +324,7 @@ export function InvoiceForm() {
       {!savedInvoice && (
         <Button type="button" onClick={handleSave} disabled={isSaving} className="flex-1 sm:flex-none">
           <Save className="h-4 w-4" />
-          {isSaving ? "Opslaan..." : "Opslaan"}
+          {isSaving ? "Opslaan..." : isEditMode ? "Wijzigingen opslaan" : "Opslaan"}
         </Button>
       )}
       {savedInvoice && (

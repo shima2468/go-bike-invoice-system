@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AppFooter } from "@/components/layout/app-footer";
 import { AppHeader } from "@/components/layout/app-header";
+import { InvoiceListActions } from "@/components/invoice/invoice-list-actions";
 import { formatCurrency, formatDate } from "@/lib/invoice-formatting";
 import { listInvoices } from "@/lib/db/invoices";
 
@@ -31,7 +32,7 @@ export default async function InvoicesPage() {
               Opgeslagen facturen
             </h1>
             <p className="mt-2 text-[15px] text-muted">
-              Alle opgeslagen facturen.
+              Alle opgeslagen facturen. Bekijken, bewerken of verwijderen.
             </p>
           </div>
           <Link
@@ -59,7 +60,7 @@ export default async function InvoicesPage() {
         ) : (
           <div className="overflow-hidden rounded-2xl bg-surface shadow-ios">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] text-left text-[14px]">
+              <table className="w-full min-w-[900px] text-left text-[14px]">
                 <thead className="border-b border-separator bg-surface-secondary/80">
                   <tr>
                     <th className="px-5 py-3 font-semibold text-label">Factuur</th>
@@ -69,11 +70,17 @@ export default async function InvoicesPage() {
                     <th className="px-5 py-3 text-right font-semibold text-label">
                       Totaal
                     </th>
+                    <th className="px-5 py-3 text-right font-semibold text-label">
+                      Acties
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-separator">
                   {invoices.map((invoice) => (
-                    <tr key={invoice.documentId ?? invoice.id} className="hover:bg-surface-secondary/40">
+                    <tr
+                      key={invoice.documentId ?? invoice.id}
+                      className="hover:bg-surface-secondary/40"
+                    >
                       <td className="px-5 py-4">
                         <Link
                           href={`/invoices/${invoice.documentId ?? invoice.id}`}
@@ -93,6 +100,9 @@ export default async function InvoicesPage() {
                       </td>
                       <td className="px-5 py-4 text-right font-semibold tabular-nums text-foreground">
                         {formatCurrency(invoice.total)}
+                      </td>
+                      <td className="px-5 py-4">
+                        <InvoiceListActions invoice={invoice} />
                       </td>
                     </tr>
                   ))}

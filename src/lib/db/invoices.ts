@@ -129,3 +129,73 @@ export async function getInvoiceById(id: string): Promise<Invoice | null> {
     }) ?? null
   );
 }
+
+function matchesInvoiceId(invoice: Invoice, id: string): boolean {
+  if (invoice.documentId === id) return true;
+  const numericId = Number(id);
+  return Number.isFinite(numericId) && invoice.id === numericId;
+}
+
+export async function updateInvoice(
+  id: string,
+  data: Omit<Invoice, "id" | "documentId" | "vatAmount" | "total" | "invoiceNumber"> & {
+    invoiceNumber?: string;
+  }
+): Promise<Invoice | null> {
+  const store = await readStore();
+  const index = store.invoices.findIndex((invoice) =>
+    matchesInvoiceId(invoice, id)
+  );
+  if (index < 0) return null;
+
+  const existing = store.invoices[index];
+  const customer = await upsertCustomer({
+    customerName: data.customerName,
+    identificationNumber: data.identificationNumber,
+    email: data.email,
+    phone: data.phone,
+  });
+
+  const { vatAmount, total } = calculateInvoiceTotals(
+    data.priceExVat,
+    data.vatRate
+  );
+
+  const updated: Invoice = {
+    ...existing,
+    invoiceNumber: data.invoiceNumber ?? existing.invoiceNumber,
+    invoiceDate: data.invoiceDate,
+    customerName: data.customerName,
+    identificationNumber: data.identificationNumber,
+    email: data.email,
+    phone: data.phone,
+    scooterType: data.scooterType,
+    warrantyDuration: data.warrantyDuration,
+    scooterCondition: data.scooterCondition,
+    priceExVat: data.priceExVat,
+    vatRate: data.vatRate,
+    vatAmount,
+    total,
+    customerId: customer.id,
+    customerDocumentId: customer.documentId,
+  };
+
+  store.invoices[index] = updated;
+  await writeStore(store);
+  return updated;
+}
+
+export async function deleteInvoice(id: string): Promise<boolean> {
+  const store = await readStore();
+  const before = store.invoices.length;
+  store.invoices = store.invoices.filter(
+    (invoice) => !matchesInvoiceId(invoice, id)
+  );
+
+  if (store.invoices.length === before) {
+    return false;
+  }
+
+  await writeStore(store);
+  return true;
+}
