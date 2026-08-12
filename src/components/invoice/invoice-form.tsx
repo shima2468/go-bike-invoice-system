@@ -209,42 +209,23 @@ export function InvoiceForm({
 
     try {
       const values = form.getValues();
+      const number = savedInvoice.invoiceNumber ?? invoiceNumber;
       const id = savedInvoice.documentId ?? String(savedInvoice.id);
-      const response = await fetch(`/api/invoices/${id}/send-email`, {
-        method: "POST",
+
+      const emailResult = await openInvoiceEmailClient({
+        to: values.email || savedInvoice.email,
+        customerName: values.customerName || savedInvoice.customerName,
+        invoiceNumber: number,
+        totalFormatted: formatCurrency(savedInvoice.total ?? total),
+        pdfUrl: `/api/invoices/${id}/pdf`,
       });
-      const result = await response.json();
 
-      if (result.success) {
-        setStatusMessage(result.message);
+      if (!emailResult.success) {
+        setErrorMessage(emailResult.message);
         return;
       }
 
-      // Geen Resend-config: open mail-app met klaar bericht + download PDF
-      if (result.fallback) {
-        const emailResult = await openInvoiceEmailClient({
-          to: result.invoice?.email ?? values.email,
-          customerName: result.invoice?.customerName ?? values.customerName,
-          invoiceNumber:
-            result.invoice?.invoiceNumber ??
-            savedInvoice.invoiceNumber ??
-            invoiceNumber,
-          totalFormatted:
-            result.invoice?.totalFormatted ??
-            formatCurrency(savedInvoice.total ?? total),
-          pdfUrl: `/api/invoices/${id}/pdf`,
-        });
-
-        if (!emailResult.success) {
-          setErrorMessage(emailResult.message);
-          return;
-        }
-
-        setStatusMessage(emailResult.message);
-        return;
-      }
-
-      throw new Error(result.message ?? "E-mail verzenden mislukt.");
+      setStatusMessage(emailResult.message);
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "E-mail verzenden mislukt."

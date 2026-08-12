@@ -27,7 +27,8 @@ export function buildMailtoUrl(params: {
     subject: params.subject,
     body: params.body,
   });
-  return `mailto:${encodeURIComponent(params.to)}?${query.toString()}`;
+  // Do not encode the email address itself — mailto clients expect a raw address
+  return `mailto:${params.to}?${query.toString()}`;
 }
 
 function downloadPdfFile(blob: Blob, filename: string) {
@@ -40,8 +41,7 @@ function downloadPdfFile(blob: Blob, filename: string) {
 }
 
 /**
- * Opens the device mail app with a ready Dutch message and downloads the PDF
- * so the employee can attach it manually.
+ * Same flow as WhatsApp: download PDF + open mail app with a ready Dutch message.
  */
 export async function openInvoiceEmailClient(params: {
   to: string;
@@ -50,7 +50,7 @@ export async function openInvoiceEmailClient(params: {
   totalFormatted: string;
   pdfUrl: string;
 }): Promise<{ success: boolean; message: string }> {
-  if (!params.to) {
+  if (!params.to?.trim()) {
     return {
       success: false,
       message: "Geen e-mailadres voor deze klant.",
@@ -70,13 +70,18 @@ export async function openInvoiceEmailClient(params: {
   }
 
   const blob = await response.blob();
-  downloadPdfFile(blob, `${params.invoiceNumber}.pdf`);
+  const filename = `${params.invoiceNumber}.pdf`;
+  downloadPdfFile(blob, filename);
 
-  window.location.href = buildMailtoUrl({
-    to: params.to,
-    subject,
-    body,
-  });
+  window.open(
+    buildMailtoUrl({
+      to: params.to.trim(),
+      subject,
+      body,
+    }),
+    "_blank",
+    "noopener,noreferrer"
+  );
 
   return {
     success: true,
