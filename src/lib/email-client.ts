@@ -18,17 +18,19 @@ ${companyConfig.name}
 ${companyConfig.phone}`;
 }
 
-export function buildMailtoUrl(params: {
+export function buildGmailComposeUrl(params: {
   to: string;
   subject: string;
   body: string;
 }): string {
   const query = new URLSearchParams({
-    subject: params.subject,
+    view: "cm",
+    fs: "1",
+    to: params.to,
+    su: params.subject,
     body: params.body,
   });
-  // Do not encode the email address itself — mailto clients expect a raw address
-  return `mailto:${params.to}?${query.toString()}`;
+  return `https://mail.google.com/mail/?${query.toString()}`;
 }
 
 function downloadPdfFile(blob: Blob, filename: string) {
@@ -41,7 +43,7 @@ function downloadPdfFile(blob: Blob, filename: string) {
 }
 
 /**
- * Same flow as WhatsApp: download PDF + open mail app with a ready Dutch message.
+ * Same flow as WhatsApp: download PDF + open Gmail Web with a ready Dutch message.
  */
 export async function openInvoiceEmailClient(params: {
   to: string;
@@ -70,25 +72,21 @@ export async function openInvoiceEmailClient(params: {
   }
 
   const blob = await response.blob();
-  const filename = `${params.invoiceNumber}.pdf`;
-  downloadPdfFile(blob, filename);
+  downloadPdfFile(blob, `${params.invoiceNumber}.pdf`);
 
-  // mailto + window.open often opens about:blank in Chrome.
-  // Use a same-tab anchor click so the OS mail app opens instead.
-  const mailtoLink = document.createElement("a");
-  mailtoLink.href = buildMailtoUrl({
-    to: params.to.trim(),
-    subject,
-    body,
-  });
-  mailtoLink.rel = "noopener noreferrer";
-  document.body.appendChild(mailtoLink);
-  mailtoLink.click();
-  mailtoLink.remove();
+  window.open(
+    buildGmailComposeUrl({
+      to: params.to.trim(),
+      subject,
+      body,
+    }),
+    "_blank",
+    "noopener,noreferrer"
+  );
 
   return {
     success: true,
     message:
-      "E-mail geopend met een klaar bericht. Voeg het gedownloade PDF-bestand toe als bijlage.",
+      "Gmail is geopend met een klaar bericht. Voeg het gedownloade PDF-bestand toe als bijlage.",
   };
 }
