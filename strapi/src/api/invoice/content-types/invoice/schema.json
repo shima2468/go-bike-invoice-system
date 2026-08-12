@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "invoices",
+  "info": {
+    "singularName": "invoice",
+    "pluralName": "invoices",
+    "displayName": "Invoice",
+    "description": "Scooter sale invoice"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "invoiceNumber": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "invoiceDate": {
+      "type": "date",
+      "required": true
+    },
+    "scooterType": {
+      "type": "string",
+      "required": true
+    },
+    "warrantyDuration": {
+      "type": "string",
+      "required": true
+    },
+    "scooterCondition": {
+      "type": "text",
+      "required": true
+    },
+    "priceExVat": {
+      "type": "decimal",
+      "required": true
+    },
+    "vatRate": {
+      "type": "decimal",
+      "required": true
+    },
+    "vatAmount": {
+      "type": "decimal",
+      "required": true
+    },
+    "total": {
+      "type": "decimal",
+      "required": true
+    },
+    "customer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::customer.customer",
+      "inversedBy": "invoices"
+    }
+  }
+}

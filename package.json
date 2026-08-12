@@ -4,14 +4,22 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:strapi": "npm run develop --prefix strapi",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.7.1",
+    "@react-pdf/renderer": "^4.6.0",
+    "date-fns": "^4.4.0",
+    "lucide-react": "^1.31.0",
     "next": "16.3.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "react-hook-form": "^7.85.0",
+    "resend": "^6.19.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

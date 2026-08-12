@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GO BIKE — Facturatiesysteem
 
-## Getting Started
+Nederlands facturatiesysteem voor GO BIKE (Gent). Next.js frontend + Strapi backend.
 
-First, run the development server:
+## Functies
+
+- Factuur aanmaken, opslaan en bekijken
+- PDF downloaden
+- E-mail (Resend of mail-app fallback)
+- WhatsApp met klaar bericht + PDF-download
+- Strapi CMS voor klanten en facturen
+
+## Lokaal starten
 
 ```bash
+# Terminal 1 — Strapi
+npm run dev:strapi
+
+# Terminal 2 — Next.js
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- App: http://localhost:3000
+- Strapi admin: http://localhost:1337/admin
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Kopieer `.env.example` naar `.env.local` en vul de variabelen in.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploy (demo voor klant)
 
-## Learn More
+### 1. Frontend (Vercel)
 
-To learn more about Next.js, take a look at the following resources:
+1. Push deze repo naar GitHub
+2. Importeer het project op [vercel.com](https://vercel.com/new)
+3. Root directory: `.` (Next.js)
+4. Environment variables:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Name | Value |
+|------|--------|
+| `STRAPI_URL` | URL van je Strapi (bijv. `https://xxx.up.railway.app`) |
+| `STRAPI_API_TOKEN` | API token uit Strapi Admin |
+| `RESEND_API_KEY` | (optioneel) |
+| `RESEND_FROM_EMAIL` | (optioneel) |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. Backend (Railway / Render)
 
-## Deploy on Vercel
+Deploy de map `strapi/`:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Build:** `npm install && npm run build`
+- **Start:** `npm run start`
+- Zet env: `HOST=0.0.0.0`, `PORT`, `APP_KEYS`, `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`, `JWT_SECRET`, `TRANSFER_TOKEN_SALT`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Na deploy: maak in Strapi Admin een API Token (Full access) en zet die in Vercel als `STRAPI_API_TOKEN`.
+
+## Tech
+
+- Next.js 16 + TypeScript + Tailwind
+- Strapi 5 (SQLite lokaal)
+- `@react-pdf/renderer` voor PDF
