@@ -88,18 +88,24 @@ export async function upsertCustomer(
   customer: Omit<Customer, "id" | "documentId">
 ): Promise<Customer> {
   const existing = await findCustomerByEmail(customer.email);
-  if (existing) {
+  if (existing?.id != null) {
     await ensureSchema();
-    const updated = await db
+    await db
       .update(customers)
       .set({
         customerName: customer.customerName,
         identificationNumber: customer.identificationNumber,
         phone: customer.phone,
       })
-      .where(eq(customers.id, existing.id!))
-      .returning();
-    return mapCustomer(updated[0]);
+      .where(eq(customers.id, existing.id));
+
+    const refreshed = await findCustomerByEmail(customer.email);
+    return refreshed ?? {
+      ...existing,
+      customerName: customer.customerName,
+      identificationNumber: customer.identificationNumber,
+      phone: customer.phone,
+    };
   }
   return createCustomer(customer);
 }

@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { createClient } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
+import { createClient, type Client } from "@libsql/client";
+import { drizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
 import * as schema from "@/lib/db/schema";
 
 function resolveDatabaseUrl(): string {
@@ -9,26 +9,47 @@ function resolveDatabaseUrl(): string {
     return process.env.TURSO_DATABASE_URL;
   }
 
-  const dataDir = path.join(process.cwd(), "data");
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
+  // On Vercel only /tmp is writable; locally use ./data
+  const baseDir =
+    process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
+      ? "/tmp"
+      : path.join(process.cwd(), "data");
+
+  if (!fs.existsSync(baseDir)) {
+    fs.mkdirSync(baseDir, { recursive: true });
   }
 
-  return `file:${path.join(dataDir, "invoices.db")}`;
+  return `file:${path.join(baseDir, "invoices.db")}`;
 }
 
-const client = createClient({
-  url: resolveDatabaseUrl(),
-  authToken: process.env.TURSO_AUTH_TOKEN,
-});
+const globalForDb = globalThis as unknown as {
+  __gobikeDbClient?: Client;
+  __gobikeDb?: LibSQLDatabase<typeof schema>;
+  __gobikeSchemaReady?: Promise<void>;
+};
 
-export const db = drizzle(client, { schema });
+function getClient(): Client {
+  if (!globalForDb.__gobikeDbClient) {
+    globalForDb.__gobikeDbClient = createClient({
+      url: resolveDatabaseUrl(),
+      authToken: process.env.TURSO_AUTH_TOKEN,
+    });
+  }
+  return globalForDb.__gobikeDbClient;
+}
 
-let schemaReady: Promise<void> | null = null;
+export const db =
+  globalForDb.__gobikeDb ??
+  drizzle(getClient(), { schema });
+
+if (!globalForDb.__gobikeDb) {
+  globalForDb.__gobikeDb = db;
+}
 
 export async function ensureSchema(): Promise<void> {
-  if (!schemaReady) {
-    schemaReady = (async () => {
+  if (!globalForDb.__gobikeSchemaReady) {
+    const client = getClient();
+    globalForDb.__gobikeSchemaReady = (async () => {
       await client.execute(`
         CREATE TABLE IF NOT EXISTS customers (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,5 +82,5 @@ export async function ensureSchema(): Promise<void> {
     })();
   }
 
-  await schemaReady;
+  await globalForDb.__gobikeSchemaReady;
 }
