@@ -113,7 +113,9 @@ function extractCustomerFromInvoice(
   }
 
   if ("customerName" in rawCustomer) {
-    return mapCustomer(rawCustomer as StrapiEntity<StrapiCustomerRecord>);
+    return mapCustomer(
+      rawCustomer as unknown as StrapiEntity<StrapiCustomerRecord>
+    );
   }
 
   return null;
