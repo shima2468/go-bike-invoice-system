@@ -138,7 +138,7 @@ export function InvoiceForm() {
 
       setSavedInvoice(result.invoice);
       setInvoiceNumber(result.invoice.invoiceNumber);
-      setStatusMessage("Factuur succesvol opgeslagen in Strapi.");
+      setStatusMessage("Factuur succesvol opgeslagen.");
       setPreviewMode(true);
     } catch (error) {
       setErrorMessage(

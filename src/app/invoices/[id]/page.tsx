@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { AppFooter } from "@/components/layout/app-footer";
 import { AppHeader } from "@/components/layout/app-header";
 import { InvoicePreview } from "@/components/invoice/invoice-preview";
-import { getInvoiceById } from "@/lib/strapi";
+import { getInvoiceById } from "@/lib/db/invoices";
 
 export default async function InvoiceDetailPage({
   params,

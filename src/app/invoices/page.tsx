@@ -2,21 +2,17 @@ import Link from "next/link";
 import { AppFooter } from "@/components/layout/app-footer";
 import { AppHeader } from "@/components/layout/app-header";
 import { formatCurrency, formatDate } from "@/lib/invoice-formatting";
-import { isStrapiConfigured, listInvoices } from "@/lib/strapi";
+import { listInvoices } from "@/lib/db/invoices";
 
 export default async function InvoicesPage() {
   let invoices: Awaited<ReturnType<typeof listInvoices>> = [];
   let error: string | null = null;
 
-  if (isStrapiConfigured()) {
-    try {
-      invoices = await listInvoices();
-    } catch (err) {
-      error =
-        err instanceof Error ? err.message : "Facturen ophalen mislukt.";
-    }
-  } else {
-    error = "Strapi is niet geconfigureerd.";
+  try {
+    invoices = await listInvoices();
+  } catch (err) {
+    error =
+      err instanceof Error ? err.message : "Facturen ophalen mislukt.";
   }
 
   return (
@@ -26,13 +22,13 @@ export default async function InvoicesPage() {
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[13px] font-semibold uppercase tracking-widest text-brand-primary">
-              Strapi
+              Overzicht
             </p>
             <h1 className="mt-1 text-[28px] font-bold text-foreground sm:text-[34px]">
               Opgeslagen facturen
             </h1>
             <p className="mt-2 text-[15px] text-muted">
-              Alle facturen opgeslagen in Strapi.
+              Alle opgeslagen facturen.
             </p>
           </div>
           <Link

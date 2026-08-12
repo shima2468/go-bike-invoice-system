@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { generateInvoicePdf } from "@/lib/generate-invoice-pdf";
 import { formatCurrency } from "@/lib/invoice-formatting";
 import { getResendConfigStatus, sendInvoiceEmail } from "@/lib/resend";
-import { getInvoiceById } from "@/lib/strapi";
+import { getInvoiceById } from "@/lib/db/invoices";
 
 export async function POST(
   _request: Request,

@@ -1,9 +1,0 @@
-# Railway / Docker: run Strapi from this folder as the service root
-[build]
-builder = "DOCKERFILE"
-dockerfilePath = "Dockerfile"
-
-[deploy]
-startCommand = "npm run start"
-healthcheckPath = "/_health"
-restartPolicyType = "ON_FAILURE"

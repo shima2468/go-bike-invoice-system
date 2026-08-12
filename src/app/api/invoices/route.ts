@@ -4,10 +4,9 @@ import { verifyInvoiceCalculations } from "@/lib/invoice-calculations";
 import {
   createInvoice,
   getNextInvoiceNumber,
-  isStrapiConfigured,
   listInvoices,
   upsertCustomer,
-} from "@/lib/strapi";
+} from "@/lib/db/invoices";
 import { invoiceFormSchema } from "@/schemas/invoice.schema";
 
 const saveInvoiceSchema = invoiceFormSchema.extend({
@@ -16,17 +15,6 @@ const saveInvoiceSchema = invoiceFormSchema.extend({
 
 export async function GET() {
   try {
-    if (!isStrapiConfigured()) {
-      return NextResponse.json(
-        {
-          success: false,
-          message:
-            "Strapi is niet geconfigureerd. Stel STRAPI_URL en STRAPI_API_TOKEN in.",
-        },
-        { status: 503 }
-      );
-    }
-
     const invoices = await listInvoices();
 
     return NextResponse.json({
@@ -49,17 +37,6 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    if (!isStrapiConfigured()) {
-      return NextResponse.json(
-        {
-          success: false,
-          message:
-            "Strapi is niet geconfigureerd. Stel STRAPI_URL en STRAPI_API_TOKEN in.",
-        },
-        { status: 503 }
-      );
-    }
-
     const body = await request.json();
     const parsed = saveInvoiceSchema.safeParse(body);
 
@@ -123,7 +100,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Factuur succesvol opgeslagen in Strapi.",
+      message: "Factuur succesvol opgeslagen.",
       invoice,
     });
   } catch (error) {

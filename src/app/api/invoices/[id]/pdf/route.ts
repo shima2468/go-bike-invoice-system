@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateInvoicePdf } from "@/lib/generate-invoice-pdf";
-import { getInvoiceById } from "@/lib/strapi";
+import { getInvoiceById } from "@/lib/db/invoices";
 
 export async function GET(
   _request: Request,
