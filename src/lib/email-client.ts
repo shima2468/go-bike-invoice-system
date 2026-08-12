@@ -73,15 +73,18 @@ export async function openInvoiceEmailClient(params: {
   const filename = `${params.invoiceNumber}.pdf`;
   downloadPdfFile(blob, filename);
 
-  window.open(
-    buildMailtoUrl({
-      to: params.to.trim(),
-      subject,
-      body,
-    }),
-    "_blank",
-    "noopener,noreferrer"
-  );
+  // mailto + window.open often opens about:blank in Chrome.
+  // Use a same-tab anchor click so the OS mail app opens instead.
+  const mailtoLink = document.createElement("a");
+  mailtoLink.href = buildMailtoUrl({
+    to: params.to.trim(),
+    subject,
+    body,
+  });
+  mailtoLink.rel = "noopener noreferrer";
+  document.body.appendChild(mailtoLink);
+  mailtoLink.click();
+  mailtoLink.remove();
 
   return {
     success: true,
