@@ -20,16 +20,17 @@ const logoPath = path.join(process.cwd(), "public", "go-bike-logo.png");
 const LOGO_ASPECT_RATIO = 1667 / 943;
 const LOGO_HEIGHT = 52;
 
-const borderColor = "#d4d4d4";
-const headerBg = "#f5f5f5";
+const borderColor = "#2a2a2a";
+const headerBg = "#161616";
+const muted = "#a1a1aa";
 
 const styles = StyleSheet.create({
   page: {
     padding: 36,
     fontSize: 9,
     fontFamily: "Helvetica",
-    color: "#171717",
-    backgroundColor: "#ffffff",
+    color: "#ffffff",
+    backgroundColor: "#0a0a0a",
   },
   topRow: {
     flexDirection: "row",
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
   },
   invoiceLabel: {
     fontSize: 9,
-    color: "#737373",
+    color: brandTheme.primary,
     marginBottom: 4,
     textAlign: "right",
   },
@@ -52,6 +53,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     textAlign: "right",
+    color: "#ffffff",
   },
   companyBlock: {
     alignItems: "flex-start",
@@ -69,10 +71,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
     marginBottom: 2,
+    color: "#ffffff",
   },
   companyLine: {
     fontSize: 8,
-    color: "#525252",
+    color: muted,
     textAlign: "left",
   },
   infoBox: {
@@ -80,6 +83,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor,
     marginBottom: 0,
+    backgroundColor: "#111111",
   },
   infoColumn: {
     flex: 1,
@@ -94,7 +98,7 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: 8,
     fontWeight: "bold",
-    color: "#737373",
+    color: muted,
     textTransform: "uppercase",
     marginBottom: 8,
     letterSpacing: 0.4,
@@ -103,11 +107,13 @@ const styles = StyleSheet.create({
     fontSize: 8,
     lineHeight: 1.5,
     marginBottom: 3,
+    color: "#e4e4e7",
   },
   infoBold: {
     fontSize: 8,
     fontWeight: "bold",
     marginBottom: 3,
+    color: "#ffffff",
   },
   table: {
     borderLeftWidth: 1,
@@ -125,7 +131,7 @@ const styles = StyleSheet.create({
     padding: 8,
     fontSize: 8,
     fontWeight: "bold",
-    color: "#404040",
+    color: "#d4d4d8",
     borderRightWidth: 1,
     borderRightColor: borderColor,
   },
@@ -133,13 +139,14 @@ const styles = StyleSheet.create({
     padding: 8,
     fontSize: 8,
     fontWeight: "bold",
-    color: "#404040",
+    color: "#d4d4d8",
   },
   tableRow: {
     flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: borderColor,
     minHeight: 48,
+    backgroundColor: "#111111",
   },
   td: {
     padding: 8,
@@ -147,10 +154,12 @@ const styles = StyleSheet.create({
     lineHeight: 1.45,
     borderRightWidth: 1,
     borderRightColor: borderColor,
+    color: "#e4e4e7",
   },
   tdLast: {
     padding: 8,
     fontSize: 8,
+    color: "#ffffff",
   },
   colProduct: { width: "22%" },
   colDesc: { width: "38%" },
@@ -165,6 +174,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor,
     padding: 14,
+    backgroundColor: "#111111",
   },
   totalsBox: {
     width: 180,
@@ -176,15 +186,16 @@ const styles = StyleSheet.create({
   },
   totalLabel: {
     fontSize: 8,
-    color: "#525252",
+    color: muted,
   },
   totalValue: {
     fontSize: 8,
     fontWeight: "bold",
+    color: "#ffffff",
   },
   totalDivider: {
     borderTopWidth: 1,
-    borderTopColor: "#e5e5e5",
+    borderTopColor: borderColor,
     marginTop: 4,
     marginBottom: 4,
     paddingTop: 4,
@@ -197,6 +208,7 @@ const styles = StyleSheet.create({
   balanceLabel: {
     fontSize: 10,
     fontWeight: "bold",
+    color: "#ffffff",
   },
   balanceValue: {
     fontSize: 10,
@@ -210,7 +222,7 @@ const styles = StyleSheet.create({
     borderTopColor: borderColor,
     textAlign: "center",
     fontSize: 8,
-    color: "#737373",
+    color: muted,
   },
 });
 

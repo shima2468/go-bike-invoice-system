@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { AppFooter } from "@/components/layout/app-footer";
-import { AppHeader } from "@/components/layout/app-header";
 import { InvoiceListActions } from "@/components/invoice/invoice-list-actions";
 import { formatCurrency, formatDate } from "@/lib/invoice-formatting";
 import { listInvoices } from "@/lib/db/invoices";
@@ -20,8 +18,6 @@ export default async function InvoicesPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      <AppHeader />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -112,7 +108,5 @@ export default async function InvoicesPage() {
           </div>
         )}
       </main>
-      <AppFooter />
-    </div>
   );
 }

@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AppFooter } from "@/components/layout/app-footer";
-import { AppHeader } from "@/components/layout/app-header";
 import { ReceiptDetailActions } from "@/components/receipt/receipt-detail-actions";
 import { ReceiptPreview } from "@/components/receipt/receipt-preview";
 import { getReceiptById } from "@/lib/db/receipts";
@@ -24,9 +22,7 @@ export default async function ReceiptDetailPage({
   const receiptId = receipt.documentId ?? String(receipt.id);
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      <AppHeader />
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
+    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[13px] font-semibold uppercase tracking-widest text-brand-primary">
@@ -73,7 +69,5 @@ export default async function ReceiptDetailPage({
           </Link>
         </div>
       </main>
-      <AppFooter />
-    </div>
   );
 }

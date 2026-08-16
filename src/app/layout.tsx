@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { AppShell } from "@/components/layout/app-shell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GO BIKE Facturatie",
-  description: "Professionele facturatie voor GO BIKE",
+  title: "GO BIKE Dashboard",
+  description: "Verkoopcijfers, facturen en bonnen voor GO BIKE",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -24,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} min-h-dvh antialiased`}
     >
       <body className="flex min-h-dvh flex-col bg-background text-foreground selection:bg-brand-primary/25">
-        <div className="flex min-h-dvh flex-1 flex-col">{children}</div>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

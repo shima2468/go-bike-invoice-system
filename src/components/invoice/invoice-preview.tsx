@@ -12,18 +12,16 @@ import type { InvoiceFormValues } from "@/schemas/invoice.schema";
 function InfoColumn({
   title,
   children,
-  className = "",
 }: {
   title: string;
   children: React.ReactNode;
-  className?: string;
 }) {
   return (
-    <div className={`border-b border-neutral-300 p-4 last:border-b-0 md:border-b-0 md:border-r md:p-5 md:last:border-r-0 ${className}`}>
-      <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wide text-neutral-500">
+    <div className="border-b border-white/10 p-4 last:border-b-0 md:border-b-0 md:border-r md:border-white/10 md:p-5 md:last:border-r-0">
+      <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wide text-zinc-500">
         {title}
       </h3>
-      <div className="space-y-1 text-[13px] leading-relaxed text-neutral-800">
+      <div className="space-y-1 text-[13px] leading-relaxed text-zinc-200">
         {children}
       </div>
     </div>
@@ -47,53 +45,51 @@ export function InvoicePreview({
   });
 
   return (
-    <div className="overflow-hidden rounded-lg border border-neutral-300 bg-white shadow-ios-lg">
-      {/* Header */}
-      <div className="flex flex-col gap-5 border-b border-neutral-300 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#111111]">
+      <div className="flex flex-col gap-5 border-b border-white/10 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
         <div>
           {companyConfig.logoExists && (
-            <div className="mb-3">
+            <div className="mb-3 inline-flex rounded-xl bg-black p-2">
               <CompanyLogo className="h-14 sm:h-16" />
             </div>
           )}
-          <p className="text-[14px] font-bold text-neutral-900">{companyConfig.name}</p>
+          <p className="text-[14px] font-bold text-white">{companyConfig.name}</p>
           {getCompanyAddressLines().map((line) => (
-            <p key={line} className="text-[12px] text-neutral-600">
+            <p key={line} className="text-[12px] text-zinc-400">
               {line}
             </p>
           ))}
           {companyConfig.phone && (
-            <p className="mt-1 text-[12px] text-neutral-600">{companyConfig.phone}</p>
+            <p className="mt-1 text-[12px] text-zinc-400">{companyConfig.phone}</p>
           )}
         </div>
 
         <div className="sm:text-right">
-          <p className="text-[13px] font-medium text-neutral-500">Factuur</p>
-          <h2 className="text-[26px] font-bold tracking-tight text-neutral-900 sm:text-[30px]">
+          <p className="text-[13px] font-medium text-brand-primary">Factuur</p>
+          <h2 className="text-[26px] font-bold tracking-tight text-white sm:text-[30px]">
             {invoiceNumber}
           </h2>
         </div>
       </div>
 
-      {/* Info block — 3 columns */}
-      <div className="grid border-b border-neutral-300 md:grid-cols-3">
+      <div className="grid border-b border-white/10 md:grid-cols-3">
         <InfoColumn title="Factuurgegevens">
           <p>
-            <span className="text-neutral-500">Factuurdatum: </span>
+            <span className="text-zinc-500">Factuurdatum: </span>
             {data.invoiceDate ? formatDate(data.invoiceDate) : "—"}
           </p>
           <p>
-            <span className="text-neutral-500">Vervaldatum: </span>
+            <span className="text-zinc-500">Vervaldatum: </span>
             {data.invoiceDate ? formatDueDate(data.invoiceDate) : "—"}
           </p>
-          <p className="pt-1 font-semibold text-neutral-900">
-            <span className="font-normal text-neutral-500">Te betalen: </span>
-            {formatCurrency(total)}
+          <p className="pt-1 font-semibold text-white">
+            <span className="font-normal text-zinc-500">Te betalen: </span>
+            <span className="text-brand-primary">{formatCurrency(total)}</span>
           </p>
         </InfoColumn>
 
         <InfoColumn title="Leverancier">
-          <p className="font-semibold">{companyConfig.name}</p>
+          <p className="font-semibold text-white">{companyConfig.name}</p>
           {getCompanyAddressLines().map((line) => (
             <p key={line}>{line}</p>
           ))}
@@ -101,50 +97,47 @@ export function InvoicePreview({
         </InfoColumn>
 
         <InfoColumn title="Factureren aan">
-          <p className="font-semibold">{data.customerName || "—"}</p>
+          <p className="font-semibold text-white">{data.customerName || "—"}</p>
           <p>ID: {data.identificationNumber || "—"}</p>
           <p>{data.email || "—"}</p>
           <p>Tel: {data.phone || "—"}</p>
         </InfoColumn>
       </div>
 
-      {/* Items table */}
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] border-collapse text-[13px]">
           <thead>
-            <tr className="border-b border-neutral-300 bg-neutral-100">
-              <th className="border-r border-neutral-300 px-4 py-3 text-left font-bold text-neutral-700">
+            <tr className="border-b border-white/10 bg-white/5">
+              <th className="border-r border-white/10 px-4 py-3 text-left font-bold text-zinc-300">
                 Product
               </th>
-              <th className="border-r border-neutral-300 px-4 py-3 text-left font-bold text-neutral-700">
+              <th className="border-r border-white/10 px-4 py-3 text-left font-bold text-zinc-300">
                 Omschrijving
               </th>
-              <th className="border-r border-neutral-300 px-4 py-3 text-center font-bold text-neutral-700 w-20">
+              <th className="w-20 border-r border-white/10 px-4 py-3 text-center font-bold text-zinc-300">
                 Aantal
               </th>
-              <th className="border-r border-neutral-300 px-4 py-3 text-right font-bold text-neutral-700 w-28">
+              <th className="w-28 border-r border-white/10 px-4 py-3 text-right font-bold text-zinc-300">
                 Prijs
               </th>
-              <th className="px-4 py-3 text-right font-bold text-neutral-700 w-28">
-                Bedrag
-              </th>
+              <th className="px-4 py-3 text-right font-bold text-zinc-300">Bedrag</th>
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b border-neutral-300">
-              <td className="border-r border-neutral-300 px-4 py-4 align-top font-medium text-neutral-900">
+            <tr className="border-b border-white/10">
+              <td className="border-r border-white/10 px-4 py-4 align-top font-medium text-white">
                 {data.scooterType || "Scooter"}
               </td>
-              <td className="border-r border-neutral-300 px-4 py-4 align-top text-neutral-700">
+              <td className="border-r border-white/10 px-4 py-4 align-top text-zinc-400">
                 {description}
               </td>
-              <td className="border-r border-neutral-300 px-4 py-4 text-center align-top">
+              <td className="border-r border-white/10 px-4 py-4 text-center align-top text-zinc-300">
                 1
               </td>
-              <td className="border-r border-neutral-300 px-4 py-4 text-right align-top tabular-nums">
+              <td className="border-r border-white/10 px-4 py-4 text-right align-top tabular-nums text-zinc-300">
                 {formatCurrency(data.priceExVat || 0)}
               </td>
-              <td className="px-4 py-4 text-right align-top tabular-nums font-medium">
+              <td className="px-4 py-4 text-right align-top font-medium tabular-nums text-white">
                 {formatCurrency(data.priceExVat || 0)}
               </td>
             </tr>
@@ -152,29 +145,28 @@ export function InvoicePreview({
         </table>
       </div>
 
-      {/* Totals */}
-      <div className="flex justify-end border-t border-neutral-300 p-5 sm:p-6">
+      <div className="flex justify-end border-t border-white/10 p-5 sm:p-6">
         <dl className="w-full max-w-xs space-y-2 text-[13px]">
           <div className="flex justify-between gap-6">
-            <dt className="text-neutral-600">Subtotaal excl. btw</dt>
-            <dd className="tabular-nums font-medium text-neutral-900">
+            <dt className="text-zinc-500">Subtotaal excl. btw</dt>
+            <dd className="font-medium tabular-nums text-white">
               {formatCurrency(data.priceExVat || 0)}
             </dd>
           </div>
           <div className="flex justify-between gap-6">
-            <dt className="text-neutral-600">BTW ({formatPercent(data.vatRate || 0)})</dt>
-            <dd className="tabular-nums font-medium text-neutral-900">
+            <dt className="text-zinc-500">BTW ({formatPercent(data.vatRate || 0)})</dt>
+            <dd className="font-medium tabular-nums text-white">
               {formatCurrency(vatAmount)}
             </dd>
           </div>
-          <div className="flex justify-between gap-6 border-t border-neutral-200 pt-2">
-            <dt className="font-semibold text-neutral-900">Totaal incl. btw</dt>
-            <dd className="tabular-nums font-semibold text-neutral-900">
+          <div className="flex justify-between gap-6 border-t border-white/10 pt-2">
+            <dt className="font-semibold text-white">Totaal incl. btw</dt>
+            <dd className="font-semibold tabular-nums text-white">
               {formatCurrency(total)}
             </dd>
           </div>
           <div className="flex justify-between gap-6 pt-1">
-            <dt className="text-[15px] font-bold text-neutral-900">Te betalen</dt>
+            <dt className="text-[15px] font-bold text-white">Te betalen</dt>
             <dd className="text-[15px] font-bold tabular-nums text-brand-primary">
               {formatCurrency(total)}
             </dd>
@@ -182,7 +174,7 @@ export function InvoicePreview({
         </dl>
       </div>
 
-      <p className="border-t border-neutral-300 px-5 py-4 text-center text-[13px] text-neutral-500 sm:px-6">
+      <p className="border-t border-white/10 px-5 py-4 text-center text-[13px] text-zinc-500 sm:px-6">
         Bedankt voor uw aankoop.
       </p>
     </div>

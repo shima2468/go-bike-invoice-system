@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { AppFooter } from "@/components/layout/app-footer";
-import { AppHeader } from "@/components/layout/app-header";
 import { SaleDeleteButton } from "@/components/sale/sale-delete-button";
 import { SaleLogForm } from "@/components/sale/sale-log-form";
 import { listSaleLog } from "@/lib/db/sales";
@@ -49,8 +47,6 @@ export default async function SalesPage({
   const grouped = groupByDate(entries);
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      <AppHeader />
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8">
           <p className="text-[13px] font-semibold uppercase tracking-widest text-brand-primary">
@@ -192,7 +188,5 @@ export default async function SalesPage({
           </>
         )}
       </main>
-      <AppFooter />
-    </div>
   );
 }

@@ -1,4 +1,4 @@
-import { addDays, format } from "date-fns";
+import { addDays, format, startOfMonth, subDays } from "date-fns";
 import { nl } from "date-fns/locale";
 
 const currencyFormatter = new Intl.NumberFormat("nl-NL", {
@@ -49,4 +49,20 @@ export function buildScooterDescription(params: {
 
 export function todayIsoDate(): string {
   return format(new Date(), "yyyy-MM-dd");
+}
+
+export function monthStartIsoDate(date = new Date()): string {
+  return format(startOfMonth(date), "yyyy-MM-dd");
+}
+
+export function formatWeekdayShort(date: Date | string): string {
+  const parsed = typeof date === "string" ? new Date(date) : date;
+  return format(parsed, "EEE d", { locale: nl });
+}
+
+export function lastNIsoDates(days: number): string[] {
+  const today = new Date();
+  return Array.from({ length: days }, (_, index) =>
+    format(subDays(today, days - 1 - index), "yyyy-MM-dd")
+  );
 }
