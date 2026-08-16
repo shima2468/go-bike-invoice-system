@@ -20,10 +20,24 @@ export function AppFooter() {
 
         <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13px] text-muted lg:justify-end">
           <Link
+            href="/sales"
+            className="transition-colors hover:text-brand-primary"
+          >
+            Verkoop
+          </Link>
+          <span className="hidden text-separator sm:inline">·</span>
+          <Link
             href="/invoices/new"
             className="transition-colors hover:text-brand-primary"
           >
             Nieuwe factuur
+          </Link>
+          <span className="hidden text-separator sm:inline">·</span>
+          <Link
+            href="/receipts/new"
+            className="transition-colors hover:text-brand-primary"
+          >
+            Nieuwe bon
           </Link>
           <span className="hidden text-separator sm:inline">·</span>
           <span>{companyConfig.city ? `${companyConfig.postalCode} ${companyConfig.city}` : companyConfig.country}</span>

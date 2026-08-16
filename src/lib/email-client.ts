@@ -4,13 +4,15 @@ export function buildInvoiceEmailGreeting(params: {
   customerName: string;
   invoiceNumber: string;
   totalFormatted: string;
+  documentKind?: "invoice" | "receipt";
 }): string {
   const firstName = params.customerName.trim().split(/\s+/)[0] || "klant";
+  const isReceipt = params.documentKind === "receipt";
 
   return `Beste ${firstName},
 
 Bedankt voor uw aankoop bij ons.
-In de bijlage vindt u uw factuur ${params.invoiceNumber}.
+In de bijlage vindt u ${isReceipt ? "uw betalingsbewijs" : "uw factuur"} ${params.invoiceNumber}.
 Totaal: ${params.totalFormatted}.
 
 Met vriendelijke groet
@@ -51,6 +53,7 @@ export async function openInvoiceEmailClient(params: {
   invoiceNumber: string;
   totalFormatted: string;
   pdfUrl: string;
+  documentKind?: "invoice" | "receipt";
 }): Promise<{ success: boolean; message: string }> {
   if (!params.to?.trim()) {
     return {
@@ -63,8 +66,10 @@ export async function openInvoiceEmailClient(params: {
     customerName: params.customerName,
     invoiceNumber: params.invoiceNumber,
     totalFormatted: params.totalFormatted,
+    documentKind: params.documentKind,
   });
-  const subject = `Factuur ${params.invoiceNumber} — ${companyConfig.name}`;
+  const isReceipt = params.documentKind === "receipt";
+  const subject = `${isReceipt ? "Bon" : "Factuur"} ${params.invoiceNumber} — ${companyConfig.name}`;
 
   const response = await fetch(params.pdfUrl);
   if (!response.ok) {

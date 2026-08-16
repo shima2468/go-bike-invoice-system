@@ -31,6 +31,10 @@ export function formatInvoiceNumber(sequence: number): string {
   return `INV-${String(sequence).padStart(6, "0")}`;
 }
 
+export function formatReceiptNumber(sequence: number): string {
+  return `BON-${String(sequence).padStart(6, "0")}`;
+}
+
 export function formatDueDate(invoiceDate: string, days = 14): string {
   const parsed = new Date(invoiceDate);
   return format(addDays(parsed, days), "d MMMM yyyy", { locale: nl });

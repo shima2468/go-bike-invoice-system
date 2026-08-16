@@ -34,16 +34,18 @@ export function buildWhatsAppGreeting(params: {
   customerName: string;
   invoiceNumber: string;
   totalFormatted?: string;
+  documentKind?: "invoice" | "receipt";
 }): string {
   const firstName = params.customerName.trim().split(/\s+/)[0] || "klant";
   const totalLine = params.totalFormatted
     ? `\nTotaal: ${params.totalFormatted}.`
     : "";
+  const isReceipt = params.documentKind === "receipt";
 
   return `Hallo ${firstName},
 
 Bedankt voor uw aankoop bij ons.
-In de bijlage vindt u uw factuur ${params.invoiceNumber}.${totalLine}
+In de bijlage vindt u ${isReceipt ? "uw betalingsbewijs" : "uw factuur"} ${params.invoiceNumber}.${totalLine}
 
 Met vriendelijke groet
 GO BIKE`;
@@ -68,11 +70,13 @@ export async function shareInvoicePdfViaWhatsApp(params: {
   invoiceNumber: string;
   totalFormatted?: string;
   pdfUrl: string;
+  documentKind?: "invoice" | "receipt";
 }): Promise<{ success: boolean; message: string }> {
   const greetingMessage = buildWhatsAppGreeting({
     customerName: params.customerName,
     invoiceNumber: params.invoiceNumber,
     totalFormatted: params.totalFormatted,
+    documentKind: params.documentKind,
   });
 
   const response = await fetch(params.pdfUrl);

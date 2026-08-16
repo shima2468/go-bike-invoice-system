@@ -2,21 +2,44 @@ import fs from "fs";
 import path from "path";
 import { get, put } from "@vercel/blob";
 import type { Customer, Invoice } from "@/types/invoice";
+import type { Receipt } from "@/types/receipt";
+import type { Sale } from "@/types/sale";
 
 export interface StoreData {
   customers: Customer[];
   invoices: Invoice[];
+  receipts: Receipt[];
+  sales: Sale[];
   nextCustomerId: number;
   nextInvoiceId: number;
+  nextReceiptId: number;
+  nextSaleId: number;
 }
 
 const STORE_KEY = "gobike-invoices-store.json";
 const EMPTY_STORE: StoreData = {
   customers: [],
   invoices: [],
+  receipts: [],
+  sales: [],
   nextCustomerId: 1,
   nextInvoiceId: 1,
+  nextReceiptId: 1,
+  nextSaleId: 1,
 };
+
+function normalizeStore(data: Partial<StoreData> | null | undefined): StoreData {
+  return {
+    customers: data?.customers ?? [],
+    invoices: data?.invoices ?? [],
+    receipts: data?.receipts ?? [],
+    sales: data?.sales ?? [],
+    nextCustomerId: data?.nextCustomerId ?? 1,
+    nextInvoiceId: data?.nextInvoiceId ?? 1,
+    nextReceiptId: data?.nextReceiptId ?? 1,
+    nextSaleId: data?.nextSaleId ?? 1,
+  };
+}
 
 function localStorePath(): string {
   const dir =
@@ -61,7 +84,7 @@ async function readFromBlob(): Promise<StoreData | null> {
   if (!result || result.statusCode === 304 || !result.stream) return null;
 
   const text = await streamToString(result.stream);
-  return JSON.parse(text) as StoreData;
+  return normalizeStore(JSON.parse(text) as Partial<StoreData>);
 }
 
 async function writeToBlob(data: StoreData): Promise<void> {
@@ -75,37 +98,58 @@ async function writeToBlob(data: StoreData): Promise<void> {
 
 export async function readStore(): Promise<StoreData> {
   if (useBlob()) {
-    try {
-      const fromBlob = await readFromBlob();
-      if (fromBlob) return fromBlob;
-    } catch {
-      // fall through to local/empty
-    }
+    const fromBlob = await readFromBlob();
+    if (fromBlob) return fromBlob;
+    return normalizeStore(EMPTY_STORE);
+  }
+
+  if (process.env.VERCEL) {
+    throw new Error(
+      "BLOB_READ_WRITE_TOKEN ontbreekt. Zonder Vercel Blob gaan gegevens verloren."
+    );
   }
 
   const filePath = localStorePath();
   if (fs.existsSync(filePath)) {
     try {
-      return JSON.parse(fs.readFileSync(filePath, "utf8")) as StoreData;
+      return normalizeStore(
+        JSON.parse(fs.readFileSync(filePath, "utf8")) as Partial<StoreData>
+      );
     } catch {
-      return { ...EMPTY_STORE, customers: [], invoices: [] };
+      return normalizeStore(EMPTY_STORE);
     }
   }
 
-  return { ...EMPTY_STORE, customers: [], invoices: [] };
+  return normalizeStore(EMPTY_STORE);
 }
 
 export async function writeStore(data: StoreData): Promise<void> {
+  const payload: StoreData = {
+    customers: data.customers,
+    invoices: data.invoices,
+    receipts: data.receipts ?? [],
+    sales: data.sales ?? [],
+    nextCustomerId: data.nextCustomerId,
+    nextInvoiceId: data.nextInvoiceId,
+    nextReceiptId: data.nextReceiptId ?? 1,
+    nextSaleId: data.nextSaleId ?? 1,
+  };
+
   if (useBlob()) {
-    await writeToBlob(data);
-    // Keep a local mirror when possible (local/dev)
+    await writeToBlob(payload);
     try {
-      fs.writeFileSync(localStorePath(), JSON.stringify(data, null, 2), "utf8");
+      fs.writeFileSync(localStorePath(), JSON.stringify(payload, null, 2), "utf8");
     } catch {
-      // ignore local mirror failures on read-only filesystems
+      // local mirror is optional
     }
     return;
   }
 
-  fs.writeFileSync(localStorePath(), JSON.stringify(data, null, 2), "utf8");
+  if (process.env.VERCEL) {
+    throw new Error(
+      "BLOB_READ_WRITE_TOKEN ontbreekt. Data kan niet duurzaam worden opgeslagen."
+    );
+  }
+
+  fs.writeFileSync(localStorePath(), JSON.stringify(payload, null, 2), "utf8");
 }
