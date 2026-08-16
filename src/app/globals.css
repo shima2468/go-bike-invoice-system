@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafafa;
-  --foreground: #1c1c1e;
-  --surface: #ffffff;
-  --surface-secondary: #f5f5f5;
-  --separator: rgba(60, 60, 67, 0.12);
-  --label: #8e8e93;
-  --muted: #636366;
+  --background: #000000;
+  --foreground: #ffffff;
+  --surface: #111111;
+  --surface-secondary: #1a1a1a;
+  --separator: rgba(255, 255, 255, 0.14);
+  --label: #c7c7cc;
+  --muted: #d1d1d6;
 
   /* GO BIKE brand */
   --brand-primary: #76c72d;
-  --brand-primary-hover: #65a826;
-  --brand-primary-foreground: #1c1c1e;
-  --brand-secondary: #1a1a1a;
-  --brand-accent: #eef8e3;
-  --brand-border: rgba(60, 60, 67, 0.12);
+  --brand-primary-hover: #8ad63f;
+  --brand-primary-foreground: #000000;
+  --brand-secondary: #ffffff;
+  --brand-accent: #1a2e0d;
+  --brand-border: rgba(255, 255, 255, 0.14);
 }
 
 @theme inline {
@@ -34,14 +34,15 @@
   --color-brand-border: var(--brand-border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --shadow-ios: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
-  --shadow-ios-lg: 0 2px 8px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.08);
+  --shadow-ios: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-ios-lg: 0 2px 8px rgba(0, 0, 0, 0.45), 0 12px 32px rgba(0, 0, 0, 0.55);
 }
 
 body {
   min-height: 100dvh;
   background: var(--background);
   color: var(--foreground);
+  color-scheme: dark;
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "SF Pro Text",
     system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
